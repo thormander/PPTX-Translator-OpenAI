@@ -8,38 +8,35 @@ from dotenv import load_dotenv
 # Load environment variables from .env
 load_dotenv()
 
-# Get your Google Cloud API key from environment variable
+# Get your OpenAI API key from environment variable
 API_KEY = os.getenv('OPENAI_API_KEY')
 
 # Check for API key
 if not API_KEY:
     raise ValueError("No API key found. Please set the 'OPENAI_API_KEY' environment variable.")
 
-# GET languages supported
-def get_supported_languages():
-    url = f"https://translation.googleapis.com/language/translate/v2/languages?key={API_KEY}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        languages = response.json().get("data", {}).get("languages", [])
-        return [lang['language'] for lang in languages]
-    else:
-        print(f"Error fetching supported languages: {response.status_code} {response.text}")
-        return []
-
-# POST translate text
+# POST translate text using OpenAI API
 def translate_text(text, target_language):
-    url = f"https://translation.googleapis.com/language/translate/v2?key={API_KEY}"
+    if not text.strip():
+        return text  # Return the text as is if it's empty or only whitespace
+
+    url = "https://api.openai.com/v1/completions"
     headers = {
+        "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
     }
+    prompt = f"Translate the text after the colon to {target_language}. If there is no direct translation, just use what is currently there: {text}"
     body = {
-        "q": text,
-        "target": target_language,
-        "format": "text"
+        "model": "gpt-3.5-turbo-instruct",
+        "prompt": prompt,
+        "max_tokens": 1000,
+        "n": 1,
+        "stop": None,
+        "temperature": 0.5
     }
     response = requests.post(url, headers=headers, json=body)
     if response.status_code == 200:
-        return response.json()['data']['translations'][0]['translatedText']
+        return response.json()['choices'][0]['text'].strip()
     else:
         print(f"Error translating text: {response.status_code} {response.text}")
         return text
@@ -87,45 +84,14 @@ def process_folder(folder_path, target_language):
             process_presentation(file_path, target_language)
 
 def main():
-    print("Please use the ISO 639 language code for the argument!")
-    print("Example language syntax:")
-    print("English: en")
-    print("Spanish: es")
-    print("French: fr")
-    print("German: de")
-    print("")
-    print("See Full List of ISO 639 Languages here: " + 'https://cloud.google.com/translate/docs/languages')
-    print("")
-
     parser = argparse.ArgumentParser(description="Translate PowerPoint presentations. Usage: python3 translatePPTX.py <input_path> <target_language>")
     parser.add_argument("input_path", nargs='?', help="Path to the input PowerPoint file or folder")
     parser.add_argument("target_language", nargs='?', help="Target language for translation (ex: 'en' for English, 'es' for Spanish)")
-    parser.add_argument("--list-langs", "-l", action="store_true", help="List supported languages and exit")
     args = parser.parse_args()
-
-    # If --list-langs flag is provided, list the supported languages and exit
-    if args.list_langs:
-        supported_languages = get_supported_languages()
-        if supported_languages:
-            print("Supported languages:")
-            print(supported_languages)
-        else:
-            print("Failed to fetch supported languages.")
-        return
 
     if not args.input_path or not args.target_language:
         parser.print_help()
         return
-    
-    # check if users code is valid before running it (otherwise it will cause a bunch of errors @ api endpoint)
-    valid_language_codes = get_supported_languages()
-    if args.target_language not in valid_language_codes:
-        print("ERROR: NOT A VALID LANGUAGE CODE")
-        print("")
-        print("ERROR: Please submit a valid language code")
-        print("")
-
-        return -1
     
     # handle individual vs bulk handling
     if os.path.isdir(args.input_path):
