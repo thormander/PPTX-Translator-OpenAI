@@ -9,11 +9,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get your Google Cloud API key from environment variable
-API_KEY = os.getenv('GOOGLE_API_KEY')
+API_KEY = os.getenv('OPENAI_API_KEY')
 
 # Check for API key
 if not API_KEY:
-    raise ValueError("No API key found. Please set the 'GOOGLE_API_KEY' environment variable.")
+    raise ValueError("No API key found. Please set the 'OPENAI_API_KEY' environment variable.")
 
 # GET languages supported
 def get_supported_languages():
@@ -87,18 +87,6 @@ def process_folder(folder_path, target_language):
             process_presentation(file_path, target_language)
 
 def main():
-    # for link output to console (this sometimes works)
-    def link(uri, label=None):
-        if label is None: 
-            label = uri
-        parameters = ''
-
-        # OSC 8 ; params ; URI ST <name> OSC 8 ;; ST 
-        escape_mask = '\033]8;{};{}\033\\{}\033]8;;\033\\'
-
-        return escape_mask.format(parameters, uri, label)
-    # ------------------------
-
     print("Please use the ISO 639 language code for the argument!")
     print("Example language syntax:")
     print("English: en")
@@ -106,7 +94,7 @@ def main():
     print("French: fr")
     print("German: de")
     print("")
-    print("See Full List of ISO 639 Languages here: " + link('https://cloud.google.com/translate/docs/languages'))
+    print("See Full List of ISO 639 Languages here: " + 'https://cloud.google.com/translate/docs/languages')
     print("")
 
     parser = argparse.ArgumentParser(description="Translate PowerPoint presentations. Usage: python3 translatePPTX.py <input_path> <target_language>")
