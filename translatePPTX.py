@@ -2,6 +2,7 @@ import os
 import argparse
 import requests
 from pptx import Presentation
+from pptx.util import Pt
 from tqdm import tqdm
 from dotenv import load_dotenv
 
@@ -66,13 +67,32 @@ def translate_text(text, target_language):
         print(f"Error translating text: {response.status_code} {response.text}")
         return text
 
+def adjust_font_size(run, original_text, translated_text):
+    original_length = len(original_text)
+    translated_length = len(translated_text)
+    
+    if run.font.size is not None:
+        current_font_size = run.font.size.pt
+        if translated_length > original_length:
+            scale_factor = original_length / translated_length
+            new_font_size = current_font_size * scale_factor
+        else:
+            scale_factor = translated_length / original_length
+            new_font_size = current_font_size * scale_factor
+        
+        # Ensure the new font size is within the valid range for powerpoint
+        new_font_size = max(10, min(new_font_size, 400))
+        run.font.size = Pt(new_font_size)
+
 def translate_shape_text(shape, target_language):
     if not hasattr(shape, "text_frame") or not shape.text_frame:
         return
 
     for paragraph in shape.text_frame.paragraphs:
         for run in paragraph.runs:
+            original_text = run.text
             translated_text = translate_text(run.text, target_language)
+            adjust_font_size(run, original_text, translated_text)
             run.text = translated_text
 
 def process_presentation(input_file, target_language):
