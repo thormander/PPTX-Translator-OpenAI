@@ -19,24 +19,49 @@ if not API_KEY:
 def translate_text(text, target_language):
     if not text.strip():
         return text  # Return the text as is if it's empty or only whitespace
-
-    url = "https://api.openai.com/v1/completions"
+    
+    url = "https://api.openai.com/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
     }
-    prompt = f"Translate the text after the colon to {target_language}. If there is no direct translation, just use what is currently there: {text}"
+    
+    system_message = f"""You are a translator specializing in PowerPoint presentations. 
+    Your task is to translate text to {target_language}. 
+    For image attributions or license information, keep proper nouns, abbreviations, and license codes unchanged. 
+    Translate only the surrounding text.
+    IMPORTANT: Your response must be in the following format:
+    [START_TRANSLATION]
+    Your translated text here
+    [END_TRANSLATION]
+    Any explanations or notes should be outside these tags."""
+
+    user_message = f"Translate the following text to {target_language}:\n\n{text}"
+    
     body = {
-        "model": "gpt-3.5-turbo-instruct",
-        "prompt": prompt,
+        "model": "gpt-3.5-turbo",
+        "messages": [
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": user_message}
+        ],
         "max_tokens": 1000,
         "n": 1,
-        "stop": None,
-        "temperature": 0.5
+        "temperature": 0.3
     }
+    
     response = requests.post(url, headers=headers, json=body)
     if response.status_code == 200:
-        return response.json()['choices'][0]['text'].strip()
+        content = response.json()['choices'][0]['message']['content'].strip()
+        # Extract only the translated text between the tags
+        start_tag = "[START_TRANSLATION]"
+        end_tag = "[END_TRANSLATION]"
+        start_index = content.find(start_tag) + len(start_tag)
+        end_index = content.find(end_tag)
+        if start_index != -1 and end_index != -1:
+            return content[start_index:end_index].strip()
+        else:
+            print(f"WARN: Translation tags not found in the response, Skipping. Full response: {content}")
+            return text
     else:
         print(f"Error translating text: {response.status_code} {response.text}")
         return text
