@@ -4,6 +4,9 @@ PPTX Translator is a Python script to translate text in PowerPoint presentations
 
 The goal of this is to **retain original formatting** of the powerpoint and only translate the text
 
+The benefits of using OpenAI for translations versus google translate is we do not need to worry about typos in user input for target language, and we do not need to follow the ISO code for languages.
+
+The cons are that I have noticed a increase in time to complete translations.
 
 
 https://github.com/user-attachments/assets/05b50d1f-ac38-4c69-a82d-4d7c326cd904
