@@ -67,6 +67,7 @@ def translate_text(text, target_language):
         print(f"Error translating text: {response.status_code} {response.text}")
         return text
 
+# For adjusting font size to help prevent overflow
 def adjust_font_size(run, original_text, translated_text):
     original_length = len(original_text)
     translated_length = len(translated_text)
