@@ -141,6 +141,7 @@ def main():
     
     # handle individual vs bulk handling
     if os.path.isdir(args.input_path):
+        # multi file handle
         process_folder(args.input_path, args.target_language)
     else:
         process_presentation(args.input_path, args.target_language)
