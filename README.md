@@ -8,7 +8,8 @@ The benefits of using OpenAI for translations versus google translate is we do n
 
 The cons are that I have noticed a increase in time to complete translations.
 
-<add demo video here>
+
+https://github.com/user-attachments/assets/e83a68f1-6dc2-4828-9f86-5f0c58f20ce5
 
 
 
