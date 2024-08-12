@@ -26,6 +26,8 @@ You need an API key from OpenAI. You can get one from [https://openai.com/index/
 - Create a new secret key
 - Create a .env file at same location as script and add 'OPENAI_API_KEY=YOUR_KEY_HERE'
 
+*You will need at least Tier 1 for this program otherwise the max amount of requests is only 3 per minute for the free version versus the 3500 from Tier 1*
+
 ## Usage
 ```console
 python3 translatePPTX.py <PPTX file you want to translate or folder with files> <target language>
