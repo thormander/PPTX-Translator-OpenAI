@@ -13,6 +13,10 @@ https://github.com/user-attachments/assets/e83a68f1-6dc2-4828-9f86-5f0c58f20ce5
 
 
 
+## FYI
+Currently, I have hardcoded the rate limits in the code. You will need to adjust this based on your use case. For me, I have 'Tier 1' which allows me a max of 3500 RPM and 200000 TPM. As I do not have any other requests or tokens from anywhere else, I have just put the max for Tier 1 into the variables. If you expect your api to be used in other programs, a safe starting point would be 50% of the max allowed per minute. If your endpoint is already being heavily utilized, you may want to decrease the max allowed further to not cause issues for other programs that may hit the max limit.
+
+Rate Limits can be found here: [https://platform.openai.com/docs/guides/rate-limits](https://platform.openai.com/docs/guides/rate-limits)
 
 ## Requirements
 
