@@ -93,14 +93,14 @@ def translate_text(text, target_language):
     user_message = f"Translate the following text to {target_language}:\n\n{text}"
     
     body = {
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-4o-mini"
         "messages": [
             {"role": "system", "content": system_message},
             {"role": "user", "content": user_message}
         ],
         "max_tokens": 1000,
         "n": 1,
-        "temperature": 0.3
+        "temperature": 0.1
     }
     
     response = requests.post(url, headers=headers, json=body)
