@@ -46,3 +46,6 @@ You need to install the following Python packages:
 pip install requests python-pptx tqdm
 pip install python-dotenv
 ```
+
+## Extra
+You can ignore the 2 files with 'knime_node_*' if you plan on running through command line. These are the scripts I used when I made a workflow using KNIME. It is not as effiecient, but code is simplified as I have abstracted out some code to the nodes with KNIME
